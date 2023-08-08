@@ -286,9 +286,6 @@ void Machine::setLines(int lines) {
     else if (lines == 50) { this->LINES = LINES50; }
     else{}
 }
-void ignoreLine() {
-    cin.ignore(numeric_limits <std::streamsize>::max(), '\n');
-}
 
 int main()
 {  
@@ -299,8 +296,6 @@ int main()
     vector<vector<char>> temp;
     char input;
     string inp;
-    string invalid;
-    int mon;
     int bet;
     int rolls = 0;
     int rng = 0;
@@ -336,13 +331,7 @@ int main()
                 bet = stoi(inp);
                 M1.setBet(bet);
             }
-            else {
-                char c = inp.c_str()[0];
-                if (c == 'a' || c == 'A') {
-                    cout << endl;
-                }
-                cout << "Non-valid input" << endl; 
-            }
+            else { cout << "Non-valid input" << endl; }
         }
         else {
             cout << "Current Balance: " << M1.getBal() << '\n' << "Current Bet: " << M1.getBet() << " X " << M1.getLines() << " lines" << endl << "Total Spins : " << M1.getSpins() << " Max Win: " << M1.getMax() << endl
@@ -376,41 +365,21 @@ int main()
                 break;
             case 'a':
             case 'A':
+                int mon;
                 cout << "Add Funds" << endl;
-                while (true) {
-                    cin >> mon;
-                    if (!cin) {
-                        cin.clear();
-                        ignoreLine();
-                        cout << "Enter a Valid Number: ";
-                    }
-                    else {
-                        M1.addMoney(mon);
-                        break;
-                    }
-                }
+                cin >> mon;
+                M1.addMoney(mon);
                 break;
             case 'b':
             case 'B':
                 cout << "Enter New Bet: ";
-                while (true) {
-                    cin >> bet;
-                    if (!cin) {
-                        cin.clear();
-                        ignoreLine();
-                        cout << "Enter a Valid Number: ";
-                    }
-                    else if (bet > 9 || bet < 0) {
+                while (cin >> bet) {
+                    if (bet > 9 || bet < 0) {
                         cout << "Out Of Range Max Bet is 9X" << endl << "Bet 1-9" << endl;
-                        cin.clear();
                         continue;
                     }
-                    else {
-                        M1.setBet(bet);
-                        break;
-                    }
-                }
-                break;
+                    M1.setBet(bet);
+                    break;
             case 'l':
             case 'L':
                 string line;
@@ -420,12 +389,12 @@ int main()
                         M1.setLines(stoi(line));
                         break;
                     }
-                    cout << "Enter a valid number: ";
                 }
                 break;
                 //}
+                }
+                cout << endl;
             }
-            cout << endl;
         }
     }
   //  */
