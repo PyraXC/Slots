@@ -290,7 +290,7 @@ void Machine::setLines(int lines) {
 int main()
 {  
     srand(time(0));
-    Machine M1(50000);
+    Machine M1(100000);
     M1.setBet(9);
     M1.setLines(50);
     vector<vector<char>> temp;
