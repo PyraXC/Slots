@@ -6,7 +6,7 @@
 #include <regex>
 #include <vector>
 #include <time.h>
-#include <slots.h>
+#include "slots.h"
 #include <random>
 #include <map>
 using namespace std;
