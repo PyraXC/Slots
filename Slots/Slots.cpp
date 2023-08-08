@@ -113,9 +113,9 @@ vector<vector<char>> Machine::roll() {
     }
     for (int i = 0; i < roll.size(); i++) {
         for (int j = 0; j < roll[i].size(); j++) {
-          //  cout << roll[i][j] << ' ';
+            cout << roll[i][j] << ' ';
         }
-        //cout << endl;
+        cout << endl;
     }
     calcRoll(roll);
     if (bonus == 3) {
@@ -130,7 +130,7 @@ vector<vector<char>> Machine::bonusRoll(int rollNum, int rolls, int &rng) {
     int bonus = 0;
     if (rng == rollNum) {
         rng = rand() % rolls;
-        //cout << "SPECIAL ROLL" << endl;
+        cout << "SPECIAL ROLL" << endl;
         for (int j = 0; j < 5; j++) {
             vector<char> temp = {};
             BC = 0;
@@ -160,9 +160,9 @@ vector<vector<char>> Machine::bonusRoll(int rollNum, int rolls, int &rng) {
     }
     for (int i = 0; i < roll.size(); i++) {
         for (int j = 0; j < roll[i].size(); j++) {
-          //  cout << roll[i][j] << ' ';
+            cout << roll[i][j] << ' ';
         }
-        //cout << endl;
+        cout << endl;
     }
     calcRoll(roll);
     //calcRoll(roll);
@@ -186,15 +186,15 @@ void Machine::calcRoll(vector<vector<char>> roll) {
         temp = calcWild(line);
         temp2 = calcVal(temp);
         if (temp2 > 0) {
-      //      cout << "Line " << i + 1 << ": " << temp << " Worth " << temp2 << endl;
+            cout << "Line " << i + 1 << ": " << temp << " Worth " << temp2 << endl;
             amount += temp2;
         }
     }
     if (amount / (getBet() * getLines()) > 5) {
-    //    cout << "MASSIVE WIN" << endl;
+        cout << "MASSIVE WIN" << endl;
         this->MW++;
     }
-  //  cout << "Total Win For This Spin:" << amount << endl;
+    cout << "Total Win For This Spin:" << amount << endl;
     money += amount;
     total += amount;
     if (amount >= max) { max = amount; }
