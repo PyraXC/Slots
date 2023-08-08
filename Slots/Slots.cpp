@@ -303,6 +303,7 @@ int main()
     regex regex1("[NnYyBbAaLl]");
     regex regexn("[1-9]");
     regex regexlin("15|30|50");
+    cout << "Press B To Change Bet" << endl << "Press L To Change Lines" << endl << "Press N To Quit" << endl << endl;
     /*
     //while (M1.getMW() <= 0) {
     for (int i = 0; i < 10000; i++){
@@ -334,7 +335,7 @@ int main()
         }
         else {
             cout << "Current Balance: " << M1.getBal() << '\n' << "Current Bet: " << M1.getBet() << " X " << M1.getLines() << " lines" << endl << "Total Spins : " << M1.getSpins() << " Max Win: " << M1.getMax() << endl
-                << "Press Y To Spin" << endl << "Press B To Change Bet" << endl << "Press L To Change Lines" << endl << "Press N To Quit" << endl;
+                << "Press Y To Spin" << endl;
             cin >> input;
             //for (int k = 0; k < 3; k++) {
             switch (input) {
