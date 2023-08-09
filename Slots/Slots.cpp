@@ -10,6 +10,7 @@
 #include <random>
 #include <map>
 using namespace std;
+int PRINT = 1;
 const vector<vector<char>> LIST{ 
     { 'A', 'a', 'K', 'k', 'Q', 'q', 'J', 'j', 'S', 's', 'W'},//Reel 1
     { 'A', 'a', 'K', 'k', 'Q', 'q', 'J', 'j', 'S', 's', 'W'}, 
@@ -113,9 +114,9 @@ vector<vector<char>> Machine::roll() {
     }
     for (int i = 0; i < roll.size(); i++) {
         for (int j = 0; j < roll[i].size(); j++) {
-            cout << roll[i][j] << ' ';
+            if (PRINT) { cout << roll[i][j] << ' '; }
         }
-        cout << endl;
+        if (PRINT) { cout << endl; }
     }
     calcRoll(roll);
     if (bonus == 3) {
@@ -130,7 +131,7 @@ vector<vector<char>> Machine::bonusRoll(int rollNum, int rolls, int &rng) {
     int bonus = 0;
     if (rng == rollNum) {
         rng = rand() % rolls;
-        cout << "SPECIAL ROLL" << endl;
+        if (PRINT) { cout << "SPECIAL ROLL" << endl; }
         for (int j = 0; j < 5; j++) {
             vector<char> temp = {};
             BC = 0;
@@ -160,17 +161,18 @@ vector<vector<char>> Machine::bonusRoll(int rollNum, int rolls, int &rng) {
     }
     for (int i = 0; i < roll.size(); i++) {
         for (int j = 0; j < roll[i].size(); j++) {
-            cout << roll[i][j] << ' ';
+            if (PRINT) { cout << roll[i][j] << ' '; }
         }
-        cout << endl;
+        if (PRINT) { cout << endl; }
     }
     calcRoll(roll);
     //calcRoll(roll);
     //spins++;
     if (bonus == 3) {
-        cout << "RETRIGGER" << endl;
+        if (PRINT) { cout << "RETRIGGER" << endl; }
         BONUS++;
     }
+
     return roll;
 }
 void Machine::calcRoll(vector<vector<char>> roll) {
@@ -186,15 +188,15 @@ void Machine::calcRoll(vector<vector<char>> roll) {
         temp = calcWild(line);
         temp2 = calcVal(temp);
         if (temp2 > 0) {
-            cout << "Line " << i + 1 << ": " << temp << " Worth " << temp2 << endl;
+            if (PRINT) { cout << "Line " << i + 1 << ": " << temp << " Worth " << temp2 << endl; }
             amount += temp2;
         }
     }
     if (amount / (getBet() * getLines()) > 5) {
-        cout << "MASSIVE WIN" << endl;
+        if (PRINT) { cout << "MASSIVE WIN" << endl; }
         this->MW++;
     }
-    cout << "Total Win For This Spin:" << amount << endl;
+    if (PRINT) { cout << "Total Win For This Spin:" << amount << endl; }
     money += amount;
     total += amount;
     if (amount >= max) { max = amount; }
@@ -293,9 +295,12 @@ void ignoreLine() {
 int main()
 {  
     srand(time(0));
-    Machine M1(100000);
-    M1.setBet(9);
-    M1.setLines(50);
+    int tSpins = 100;
+    int tBet = 9;
+    int tLines = 50;
+    Machine M1(tBet*tLines*tSpins);
+    M1.setBet(tBet);
+    M1.setLines(tLines);
     vector<vector<char>> temp;
     char input;
     string inp;
@@ -311,20 +316,32 @@ int main()
     cout << "Press B To Change Bet" << endl << "Press L To Change Lines" << endl << "Press N To Quit" << endl << endl;
     /*
     //while (M1.getMW() <= 0) {
-    for (int i = 0; i < 10000; i++){
-        //if (M1.getBet() * M1.getLines() < M1.getBal()) { M1.addMoney(1000); }
-        if (int(M1.getBet()) * int(M1.getLines()) > int(M1.getBal())) {
-            exit;
+    for (int i = 0; i < tSpins; i++){
+        M1.roll();
+        while (M1.getBonus() >= 1) {
+            M1.setBonus(M1.getBonus() - 1);
+
+            //cout << "BONUS SPINS" << endl;
+            if (M1.getBet() > 7) { rolls = 12; }
+            else if (M1.getBet() > 4) { rolls = 10; }
+            else { rolls = 8; }
+            rng = rand() % rolls;
+            for (int i = 0; i < rolls; i++) {
+                //cout << "Press Y For Free Spin" << endl;
+                //cin >> inp;
+                //cout << "FREE SPIN: " << i + 1 << endl;
+                M1.bonusRoll(i, rolls, rng);
+            }
         }
-        else {
-            M1.roll();
-        }
-       // cout << endl;
     }
-    cout << "Total Spins " << M1.getSpins() //<< " Total Balance " << M1.getTotal() 
-        << endl;
-    cout << "Bal: " << M1.getBal() // (M1.getSpins()*M1.getBet()) << "% Average" 
-        << endl;
+
+    int cost = (M1.getSpins() * M1.getBet() * M1.getLines());
+    cout << "Total Spins: " << M1.getSpins() << endl;
+    cout << "Total Cost " << cost << endl;
+    cout << "Current Bal: " << M1.getBal() << endl;
+    cout << "Loss: " << M1.getBal() - cost << " or " << (float(M1.getBal()) / float(cost))*100 << "% return" << endl;
+    cout << "Bonus?: " << M1.getBonus() << endl;
+    cout << "Biggest Hit: " << M1.getMax() << endl;
     */
     ///*
     while (true) {
@@ -428,5 +445,5 @@ int main()
             cout << endl;
         }
     }
-  //  */
+//    */
 }
