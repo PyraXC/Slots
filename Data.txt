@@ -1,0 +1,53 @@
+Current Bet: 1
+Total Cost 5000000
+Current Bal: 4166205
+Loss: -833795 or 83.3241% return
+Biggest Hit: 1990
+
+Current Bet: 2
+Total Cost 10000000
+Current Bal: 8440568
+Loss: -1559432 or 84.4057% return
+Biggest Hit: 3676
+
+Current Bet: 3
+Total Cost 15000000
+Current Bal: 12773916
+Loss: -2226084 or 85.1594% return
+Biggest Hit: 6000
+
+Current Bet: 4
+Total Cost 20000000
+Current Bal: 17049944
+Loss: -2950056 or 85.2497% return
+Biggest Hit: 8720
+
+Current Bet: 5
+Total Cost 25000000
+Current Bal: 21531250
+Loss: -3468750 or 86.125% return
+Biggest Hit: 10000
+
+Current Bet: 6
+Total Cost 30000000
+Current Bal: 26005104
+Loss: -3994896 or 86.6837% return
+Biggest Hit: 11772
+
+Current Bet: 7
+Total Cost 35000000
+Current Bal: 30499896
+Loss: -4500104 or 87.1426% return
+Biggest Hit: 14000
+
+Current Bet: 8
+Total Cost 40000000
+Current Bal: 35350600
+Loss: -4649400 or 88.3765% return
+Biggest Hit: 18560
+
+Current Bet: 9
+Total Cost 45000000
+Current Bal: 41112936
+Loss: -3887064 or 91.3621% return
+Biggest Hit: 19620

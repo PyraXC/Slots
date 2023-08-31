@@ -9,8 +9,10 @@
 #include "slots.h"
 #include <random>
 #include <map>
+
 using namespace std;
 int PRINT = 1;
+int DEBUG = 0;
 const vector<vector<char>> LIST{ 
     { 'A', 'a', 'K', 'k', 'Q', 'q', 'J', 'j', 'S', 's', 'W'},     //Reel 1
     { 'A', 'a', 'K', 'k', 'Q', 'q', 'J', 'j', 'S', 's', 'W'},     //Reel 2
@@ -29,7 +31,7 @@ const vector<vector<char>> BONUSLIST{
 //const vector<char> LIST{ 'A', 'K', 'Q', 'J', 'A', 'K', 'Q', 'J','A', 'K', 'Q', 'J', 'S', 'S', 's', 's', 'W' };
 //const vector<char> LIST{ 'A', 'K', 'Q', 'J', 'S', 'W' };
 //const vector<char> LIST{ 'W', 'W' };
-const map<char, int> VALUES{ {'A', 6},{'K', 6},{'Q', 5},{'J', 5},{'S', 10},{'B', 10}, {'W', 10},{'s', 8}, {'a', 4}, {'k', 4}, {'q', 4}, {'j', 4} };
+const map<char, int> VALUES{ {'A', 7},{'K', 6},{'Q', 6},{'J', 6},{'S', 10},{'B', 10}, {'W', 10},{'s', 8}, {'a', 4}, {'k', 4}, {'q', 4}, {'j', 4} };
 
 vector<vector<char>> LINES15{  {'2','2','2','2','2'}, {'1','1','1','1','1'}, {'3','3','3','3','3'},
     {'1', '2', '3', '2', '1'}, {'3', '2', '1', '2', '3'},                                                   //Line 5
@@ -74,6 +76,7 @@ vector<vector<char>> LINES50{ {'2','2','2','2','2'},{'1','1','1','1','1'},{'3','
     {'1', '1', '2', '2', '3'},{'3', '3', '2', '2', '1'},
     {'1', '3', '2', '2', '1'},{'3', '1', '2', '2', '3'}                                                     //Line 50
 };
+vector<vector<char>> REELS{ {} };
 regex rList("[AKQJSs]");
 Machine::Machine() {
     money = 0;
@@ -112,11 +115,8 @@ vector<vector<char>> Machine::roll() {
         }
         roll.push_back(temp);
     }
-    for (int i = 0; i < roll.size(); i++) {
-        for (int j = 0; j < roll[i].size(); j++) {
-            if (PRINT) { cout << roll[i][j] << ' '; }
-        }
-        if (PRINT) { cout << endl; }
+    if (PRINT) {
+        printRoll(roll);
     }
     calcRoll(roll);
     if (bonus == 3) {
@@ -159,13 +159,10 @@ vector<vector<char>> Machine::bonusRoll(int rollNum, int rolls, int &rng) {
             roll.push_back(temp);
         }
     }
-    for (int i = 0; i < roll.size(); i++) {
-        for (int j = 0; j < roll[i].size(); j++) {
-            if (PRINT) { cout << roll[i][j] << ' '; }
-        }
-        if (PRINT) { cout << endl; }
+    if (PRINT) {
+        printRoll(roll);
     }
-    calcRoll(roll);
+    bonusTotal += calcRoll(roll);
     if (bonus == 3) {
         if (PRINT) { cout << "RETRIGGER" << endl; }
         BONUS++;
@@ -173,7 +170,7 @@ vector<vector<char>> Machine::bonusRoll(int rollNum, int rolls, int &rng) {
 
     return roll;
 }
-void Machine::calcRoll(vector<vector<char>> roll) {
+int Machine::calcRoll(vector<vector<char>> roll) {
     int amount = 0;
     string line;
     string temp;
@@ -198,6 +195,7 @@ void Machine::calcRoll(vector<vector<char>> roll) {
     money += amount;
     total += amount;
     if (amount >= max) { max = amount; }
+    return amount;
 }
 
 string Machine::calcWild(string str) {
@@ -242,7 +240,7 @@ int Machine::calcVal(string str) {
                 return getBet() * mult * 5;
             }
             else if ((str[0] == str[2] || str[2] == 'W') && (str[0] == str[3] || str[3] == 'W')) {
-                return getBet() * mult * 3;
+                return getBet() * mult * 4;
             }
             else if (str[0] == str[2] || str[2] == 'W') {
                 return getBet() * mult * 2;
@@ -270,10 +268,22 @@ int Machine::getMW() {
 int Machine::getBonus() {
     return BONUS;
 }
+int Machine::getBonusTotal() {
+    int temp = bonusTotal;
+    bonusTotal = 0;
+    return temp;
+}
 float Machine::getTotal() {
     return total;
 }
-
+void Machine::printRoll(vector<vector<char>> roll) {
+    for (int j = 0; j < roll[0].size(); j++) {
+        for (int i = 0; i < roll.size(); i++) {
+        cout << roll[i][j] << ' ';
+        }
+        cout << endl;
+    }
+}
 void Machine::setBet(int amount) {
     bet = amount;
 }
@@ -284,161 +294,201 @@ void Machine::setLines(int lines) {
     if (lines == 30) { this->LINES = LINES30; }
     else if (lines == 15) { this->LINES = LINES15; }
     else if (lines == 50) { this->LINES = LINES50; }
-    else{}
+    else if (lines == 243) { this->LINES = REELS; }
 }
 void ignoreLine() {
     cin.ignore(numeric_limits <std::streamsize>::max(), '\n');
 }
+void createReels() {
+    int count = 0;
+    int array[] = { 0, 1, 2 };
+    cout << next_permutation(array, array+3) << endl;
+    for (int i = 0; i < 243; i++) {
+        for (int j = 0; j < 5; j++) {
+            REELS[i][j] += j;
+        }
+    }
+
+}
 
 int main()
 {  
-    srand(time(0));
-    int tSpins = 100;
-    int tBet = 9;
-    int tLines = 50;
-    Machine M1(tBet*tLines*tSpins);
-    M1.setBet(tBet);
-    M1.setLines(tLines);
-    vector<vector<char>> temp;
-    char input;
-    string inp;
-    string invalid;
-    int mon;
-    int bet;
-    int rolls = 0;
-    int rng = 0;
-    regex regexp("[Nn]");
-    regex regex1("[NnYyBbAaLl]");
-    regex regexn("[1-9]");
-    regex regexlin("15|30|50");
-    cout << "Press B To Change Bet" << endl << "Press L To Change Lines" << endl << "Press N To Quit" << endl << endl;
-    /*
-    for (int i = 0; i < tSpins; i++){
-        M1.roll();
-        while (M1.getBonus() >= 1) {
-            M1.setBonus(M1.getBonus() - 1);
-
-            //cout << "BONUS SPINS" << endl;
-            if (M1.getBet() > 7) { rolls = 12; }
-            else if (M1.getBet() > 4) { rolls = 10; }
-            else { rolls = 8; }
-            rng = rand() % rolls;
-            for (int i = 0; i < rolls; i++) {
-                //cout << "Press Y For Free Spin" << endl;
-                //cin >> inp;
-                //cout << "FREE SPIN: " << i + 1 << endl;
-                M1.bonusRoll(i, rolls, rng);
-            }
-        }
-    }
-
-    int cost = (M1.getSpins() * M1.getBet() * M1.getLines());
-    cout << "Total Spins: " << M1.getSpins() << endl;
-    cout << "Total Cost " << cost << endl;
-    cout << "Current Bal: " << M1.getBal() << endl;
-    cout << "Loss: " << M1.getBal() - cost << " or " << (float(M1.getBal()) / float(cost))*100 << "% return" << endl;
-    cout << "Bonus?: " << M1.getBonus() << endl;
-    cout << "Biggest Hit: " << M1.getMax() << endl;
-    */
-    ///*
-    while (true) {
-        if (M1.getBet() * M1.getLines() > M1.getBal()) {
-            cout << "Bet Amount Exceeds Balance" << endl << "Please Enter New Bet Amount Or Press N To Quit" << endl;
-            cin >> inp;
-            if (regex_match(inp, regexp)) { return 0; }
-            else if (regex_match(inp, regexn)) {
-                bet = stoi(inp);
-                M1.setBet(bet);
-            }
-            else {
-                char c = inp.c_str()[0];
-                if (c == 'a' || c == 'A') {
-                    cout << endl;
-                }
-                cout << "Non-valid input" << endl; 
-            }
-        }
-        else {
-            cout << "Current Balance: " << M1.getBal() << '\n' << "Current Bet: " << M1.getBet() << " X " << M1.getLines() << " lines" << endl << "Total Spins : " << M1.getSpins() << " Max Win: " << M1.getMax() << endl
-                << "Press Y To Spin" << endl;
-            cin >> input;
-            switch (input) {
-            case 'y':
-            case 'Y':
-                cout << endl;
-                temp = M1.roll();
+    srand(time(NULL));
+    if (DEBUG) {
+    for (int i = 1; i < 10; i++) {
+        int tSpins = 10000;
+        int tBet = i;
+        int tLines = 50;
+        Machine M1(tBet * tLines * tSpins);
+        M1.setBet(tBet);
+        M1.setLines(tLines);
+        vector<vector<char>> temp;
+        char input;
+        string inp;
+        string invalid;
+        int mon;
+        int bet;
+        int rolls = 0;
+        int rng = 0;
+        regex regexp("[Nn]");
+        regex regex1("[NnYyBbAaLl]");
+        regex regexn("[1-9]");
+        regex regexlin("15|30|50");
+        if (PRINT) { cout << "Press B To Change Bet" << endl << "Press L To Change Lines" << endl << "Press N To Quit" << endl << endl; }
+        // /*
+            for (int i = 0; i < tSpins; i++) {
+                M1.roll();
                 while (M1.getBonus() >= 1) {
-                    M1.setBonus(0);
-                    cout << "BONUS SPINS" << endl;
-                    if (M1.getBet() == 9) { rolls = 15; }
-                    else if (M1.getBet() > 4) { rolls = 12; }
+                    M1.setBonus(M1.getBonus() - 1);
+
+                    //cout << "BONUS SPINS" << endl;
+                    if (M1.getBet() > 7) { rolls = 12; }
+                    else if (M1.getBet() > 4) { rolls = 10; }
                     else { rolls = 8; }
                     rng = rand() % rolls;
                     for (int i = 0; i < rolls; i++) {
-                        cout << "Press Y For Free Spin" << endl;
-                        cin >> inp;
-                        cout << "FREE SPIN: " << i + 1 << endl;
+                        //cout << "Press Y For Free Spin" << endl;
+                        //cin >> inp;
+                        //cout << "FREE SPIN: " << i + 1 << endl;
                         M1.bonusRoll(i, rolls, rng);
                     }
                 }
-                cout << endl;
-                break;
-            case 'n':
-            case 'N':
-                return 0;
-                break;
-            case 'a':
-            case 'A':
-                cout << "Add Funds" << endl;
-                while (true) {
-                    cin >> mon;
-                    if (!cin) {
-                        cin.clear();
-                        ignoreLine();
-                        cout << "Enter a Valid Number: ";
-                    }
-                    else {
-                        M1.addMoney(mon);
-                        break;
-                    }
-                }
-                break;
-            case 'b':
-            case 'B':
-                cout << "Enter New Bet: ";
-                while (true) {
-                    cin >> bet;
-                    if (!cin) {
-                        cin.clear();
-                        ignoreLine();
-                        cout << "Enter a Valid Number: ";
-                    }
-                    else if (bet > 9 || bet < 0) {
-                        cout << "Out Of Range Max Bet is 9X" << endl << "Bet 1-9" << endl;
-                        cin.clear();
-                        continue;
-                    }
-                    else {
-                        M1.setBet(bet);
-                        break;
-                    }
-                }
-                break;
-            case 'l':
-            case 'L':
-                string line;
-                cout << "Enter Lines, 15, 30, 50: ";
-                while (cin >> line) {
-                    if (regex_match(line, regexlin)) {
-                        M1.setLines(stoi(line));
-                        break;
-                    }
-                    cout << "Enter a valid number: ";
-                }
-                break;
+                if (PRINT) { cout << "Bonus Total: " << M1.getBonusTotal(); }
             }
+
+            int cost = (M1.getSpins() * M1.getBet() * M1.getLines());
+            //cout << "Total Spins: " << M1.getSpins() << endl;
+            cout << "Current Bet: " << i << endl;
+            cout << "Total Cost " << cost << endl;
+            cout << "Current Bal: " << M1.getBal() << endl;
+            cout << "Loss: " << M1.getBal() - cost << " or " << (float(M1.getBal()) / float(cost)) * 100 << "% return" << endl;
+            //cout << "Bonus?: " << M1.getBonus() << endl;
+            cout << "Biggest Hit: " << M1.getMax() << endl;
             cout << endl;
         }
+    }else{
+        int tSpins = 100;
+        int tBet = 9;
+        int tLines = 50;
+        Machine M1(tBet * tLines * tSpins);
+        M1.setBet(tBet);
+        M1.setLines(tLines);
+        vector<vector<char>> temp;
+        char input;
+        string inp;
+        string invalid;
+        int mon;
+        int bet;
+        int rolls = 0;
+        int rng = 0;
+        regex regexp("[Nn]");
+        regex regex1("[NnYyBbAaLl]");
+        regex regexn("[1-9]");
+        regex regexlin("15|30|50|R");
+        if (PRINT) { cout << "Press B To Change Bet" << endl << "Press L To Change Lines" << endl << "Press N To Quit" << endl << endl; }
+        while (true) {
+            if (M1.getBet() * M1.getLines() > M1.getBal()) {
+                cout << "Bet Amount Exceeds Balance" << endl << "Please Enter New Bet Amount Or Press N To Quit" << endl;
+                cin >> inp;
+                if (regex_match(inp, regexp)) { return 0; }
+                else if (regex_match(inp, regexn)) {
+                    bet = stoi(inp);
+                    M1.setBet(bet);
+                }
+                else {
+                    char c = inp.c_str()[0];
+                    if (c == 'a' || c == 'A') {
+                        cout << endl;
+                    }
+                    cout << "Non-valid input" << endl;
+                }
+            }
+            else {
+                cout << "Current Balance: " << M1.getBal() << '\n' << "Current Bet: " << M1.getBet() << " X " << M1.getLines() << " lines" << endl << "Total Spins : " << M1.getSpins() << " Max Win: " << M1.getMax() << endl
+                    << "Press Y To Spin" << endl;
+                cin >> input;
+                switch (input) {
+                case 'y':
+                case 'Y':
+                    cout << endl;
+                    temp = M1.roll();
+                    while (M1.getBonus() >= 1) {
+                        M1.setBonus(M1.getBonus()-1);
+                        cout << "BONUS SPINS" << endl;
+                        if (M1.getBet() == 9) { rolls = 15; }
+                        else if (M1.getBet() > 4) { rolls = 12; }
+                        else { rolls = 8; }
+                        rng = rand() % rolls;
+                        for (int i = 0; i < rolls; i++) {
+                            cout << "Press Y For Free Spin" << endl;
+                            cin >> inp;
+                            cout << "FREE SPIN: " << i + 1 << endl;
+                            M1.bonusRoll(i, rolls, rng);
+                        }if (PRINT) { cout << "Bonus Total: " << M1.getBonusTotal() << endl; }
+                    }
+                    cout << endl;
+                    break;
+                case 'n':
+                case 'N':
+                    return 0;
+                    break;
+                case 'a':
+                case 'A':
+                    cout << "Add Funds" << endl;
+                    while (true) {
+                        cin >> mon;
+                        if (!cin) {
+                            cin.clear();
+                            ignoreLine();
+                            cout << "Enter a Valid Number: ";
+                        }
+                        else {
+                            M1.addMoney(mon);
+                            break;
+                        }
+                    }
+                    break;
+                case 'b':
+                case 'B':
+                    cout << "Enter New Bet: ";
+                    while (true) {
+                        cin >> bet;
+                        if (!cin) {
+                            cin.clear();
+                            ignoreLine();
+                            cout << "Enter a Valid Number: ";
+                        }
+                        else if (bet > 9 || bet < 0) {
+                            cout << "Out Of Range Max Bet is 9X" << endl << "Bet 1-9" << endl;
+                            cin.clear();
+                            continue;
+                        }
+                        else {
+                            M1.setBet(bet);
+                            break;
+                        }
+                    }
+                    break;
+                case 'l':
+                case 'L':
+                    string line;
+                    cout << "Enter Lines, 15, 30, 50, R: ";
+                    while (cin >> line) {
+                        if (regex_match(line, regexlin)) {
+                            if (line == "R") {
+                                M1.setLines(243);
+                            }
+                            M1.setLines(stoi(line));
+                            break;
+                        }
+                        cout << "Enter a valid number: ";
+                    }
+                    break;
+                }
+                cout << endl;
+            }
+        }
     }
-//    */
+  
+    return 0;
 }
