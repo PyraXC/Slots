@@ -311,6 +311,47 @@ void createReels() {
 
 }
 
+vector<vector<char>> convReel(vector<vector<int>> reels) {
+    vector<vector<char>> REEL;
+    for (int i = 0; i < reels.size(); i++) {
+        for (int j = 0; j < reels[i].size(); j++) {
+            REEL[i][j] = to_string(reels[i][j])[0];
+            cout << REEL[i][j] << ' ';
+        }
+        cout << endl;
+    }
+
+}
+
+vector<vector<char>> createReel() {
+    vector<vector<int>> reels;
+    vector<vector<char>> reel;
+    int count = 0;
+    int i = 0, j = 0, k = 0, l = 0, m = 0;
+    while (i < 3) {
+        while (j < 3) {
+            while (k < 3) {
+                while (l < 3) {
+                    while (m < 3) {
+                        reels.push_back({ i, j, k, l, m });
+                        m++;
+                    }
+                    l++;
+                    m = 0;
+                }
+                k++;
+                l = 0;
+            }
+            j++;
+            k = 0;
+        }
+        i++;
+        j = 0;
+    }
+    reel = convReel(reels);
+    return reel;
+}
+
 int main()
 {  
     srand(time(NULL));
@@ -367,6 +408,7 @@ int main()
             cout << endl;
         }
     }else{
+        createReel();
         int tSpins = 100;
         int tBet = 9;
         int tLines = 50;
