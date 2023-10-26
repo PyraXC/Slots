@@ -12,6 +12,7 @@ public:
 	vector<vector<char>> roll();
 	vector<vector<char>> bonusRoll(int rollNum, int rolls, int &rng);
 	int calcRoll(vector<vector<char>>);
+	void createReel();
 	int calcReel(vector<vector<char>>);
 	int calcVal(string str);
 	string calcWild(string str);

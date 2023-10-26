@@ -76,7 +76,9 @@ vector<vector<char>> LINES50{ {'2','2','2','2','2'},{'1','1','1','1','1'},{'3','
     {'1', '1', '2', '2', '3'},{'3', '3', '2', '2', '1'},
     {'1', '3', '2', '2', '1'},{'3', '1', '2', '2', '3'}                                                     //Line 50
 };
-vector<vector<char>> REELS{ {} };
+vector<vector<char>> REELS = { {} };
+
+
 regex rList("[AKQJSs]");
 Machine::Machine() {
     money = 0;
@@ -97,6 +99,7 @@ Machine::Machine(int dollars) {
 void Machine::addMoney(int mon) {
     money += mon;
 }
+
 vector<vector<char>> Machine::roll() {
     vector<vector<char>> roll;
     money -= getLines() * bet;
@@ -170,6 +173,7 @@ vector<vector<char>> Machine::bonusRoll(int rollNum, int rolls, int &rng) {
 
     return roll;
 }
+
 int Machine::calcRoll(vector<vector<char>> roll) {
     int amount = 0;
     string line;
@@ -277,11 +281,13 @@ float Machine::getTotal() {
     return total;
 }
 void Machine::printRoll(vector<vector<char>> roll) {
-    for (int j = 0; j < roll[0].size(); j++) {
-        for (int i = 0; i < roll.size(); i++) {
-        cout << roll[i][j] << ' ';
+    if (PRINT) {
+        for (int j = 0; j < roll[0].size(); j++) {
+            for (int i = 0; i < roll.size(); i++) {
+                cout << roll[i][j] << ' ';
+            }
+            cout << endl;
         }
-        cout << endl;
     }
 }
 void Machine::setBet(int amount) {
@@ -290,25 +296,70 @@ void Machine::setBet(int amount) {
 void Machine::setBonus(int amount) {
     BONUS = amount;
 }
+void printReel(vector<vector<char>> reels) {
+    if (PRINT) {
+        for (int i = 0; i < reels.size(); i++) {
+            for (int j = 0; j < reels[i].size(); j++) {
+                cout << reels[i][j] << ' ';
+            }
+            cout << endl;
+        }
+    }
+}
 void Machine::setLines(int lines) {
     if (lines == 30) { this->LINES = LINES30; }
     else if (lines == 15) { this->LINES = LINES15; }
     else if (lines == 50) { this->LINES = LINES50; }
     else if (lines == 243) { this->LINES = REELS; }
+    else {}
+    printReel(this->LINES);
 }
 void ignoreLine() {
     cin.ignore(numeric_limits <std::streamsize>::max(), '\n');
 }
-void createReels() {
-    int count = 0;
-    int array[] = { 0, 1, 2 };
-    cout << next_permutation(array, array+3) << endl;
-    for (int i = 0; i < 243; i++) {
-        for (int j = 0; j < 5; j++) {
-            REELS[i][j] += j;
-        }
-    }
 
+
+vector<vector<char>> convReel(vector<vector<int>> reels) {
+    vector<vector<char>> REELS;
+    vector<char> REEL;
+    for (int i = 0; i < reels.size(); i++) {
+        for (int j = 0; j < reels[i].size(); j++) {
+            REEL.push_back(to_string(reels[i][j])[0]);
+        }
+        REELS.push_back(REEL);
+        REEL.clear();
+    }
+    return REELS;
+}
+
+void Machine::createReel() {
+    vector<vector<int>> reels;
+    vector<vector<char>> reel;
+    int count = 0;
+    int i = 1, j = 1, k = 1, l = 1, m = 1;
+    while (i < 4) {
+        while (j < 4) {
+            while (k < 4) {
+                while (l < 4) {
+                    while (m < 4) {
+                        reels.push_back({ i, j, k, l, m });
+                        m++;
+                    }
+                    l++;
+                    m = 1;
+                }
+                k++;
+                l = 1;
+            }
+            j++;
+            k = 1;
+        }
+        i++;
+        j = 1;
+    }
+    reel = convReel(reels);
+    //printReel(reel);
+    REELS = reel;
 }
 
 vector<vector<char>> convReel(vector<vector<int>> reels) {
@@ -357,10 +408,11 @@ int main()
     srand(time(NULL));
     if (DEBUG) {
     for (int i = 1; i < 10; i++) {
-        int tSpins = 10000;
+        int tSpins = 1000;
         int tBet = i;
-        int tLines = 50;
+        int tLines = 243;
         Machine M1(tBet * tLines * tSpins);
+        M1.createReel();
         M1.setBet(tBet);
         M1.setLines(tLines);
         vector<vector<char>> temp;
@@ -413,6 +465,7 @@ int main()
         int tBet = 9;
         int tLines = 50;
         Machine M1(tBet * tLines * tSpins);
+        M1.createReel();
         M1.setBet(tBet);
         M1.setLines(tLines);
         vector<vector<char>> temp;
@@ -426,7 +479,7 @@ int main()
         regex regexp("[Nn]");
         regex regex1("[NnYyBbAaLl]");
         regex regexn("[1-9]");
-        regex regexlin("15|30|50|R");
+        regex regexlin("15|30|50|[Rr]");
         if (PRINT) { cout << "Press B To Change Bet" << endl << "Press L To Change Lines" << endl << "Press N To Quit" << endl << endl; }
         while (true) {
             if (M1.getBet() * M1.getLines() > M1.getBal()) {
@@ -517,10 +570,12 @@ int main()
                     cout << "Enter Lines, 15, 30, 50, R: ";
                     while (cin >> line) {
                         if (regex_match(line, regexlin)) {
-                            if (line == "R") {
+                            if (line == "R" || line == "r") {
                                 M1.setLines(243);
                             }
-                            M1.setLines(stoi(line));
+                            else {
+                                M1.setLines(stoi(line));
+                            }
                             break;
                         }
                         cout << "Enter a valid number: ";
