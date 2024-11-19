@@ -13,6 +13,7 @@
 using namespace std;
 int PRINT = 1;
 int DEBUG = 0;
+int PRINTLINES = 0;
 const vector<vector<char>> LIST{ 
     { 'A', 'a', 'K', 'k', 'Q', 'q', 'J', 'j', 'S', 's', 'W'},     //Reel 1
     { 'A', 'a', 'K', 'k', 'Q', 'q', 'J', 'j', 'S', 's', 'W'},     //Reel 2
@@ -312,7 +313,7 @@ void Machine::setLines(int lines) {
     else if (lines == 50) { this->LINES = LINES50; }
     else if (lines == 243) { this->LINES = REELS; }
     else {}
-    printReel(this->LINES);
+    if (PRINTLINES) { printReel(this->LINES); }
 }
 void ignoreLine() {
     cin.ignore(numeric_limits <std::streamsize>::max(), '\n');
@@ -362,19 +363,8 @@ void Machine::createReel() {
     REELS = reel;
 }
 
-vector<vector<char>> convReel(vector<vector<int>> reels) {
-    vector<vector<char>> REEL;
-    for (int i = 0; i < reels.size(); i++) {
-        for (int j = 0; j < reels[i].size(); j++) {
-            REEL[i][j] = to_string(reels[i][j])[0];
-            cout << REEL[i][j] << ' ';
-        }
-        cout << endl;
-    }
 
-}
-
-vector<vector<char>> createReel() {
+/*vector<vector<char>> createReel() {
     vector<vector<int>> reels;
     vector<vector<char>> reel;
     int count = 0;
@@ -401,12 +391,12 @@ vector<vector<char>> createReel() {
     }
     reel = convReel(reels);
     return reel;
-}
+}*/
 
 int main()
 {  
     srand(time(NULL));
-    if (DEBUG) {
+    if (DEBUG) {//Set to debug mode
     for (int i = 1; i < 10; i++) {
         int tSpins = 1000;
         int tBet = i;
@@ -459,8 +449,8 @@ int main()
             cout << "Biggest Hit: " << M1.getMax() << endl;
             cout << endl;
         }
-    }else{
-        createReel();
+    }else{//Standard Mode
+      //  createReel();
         int tSpins = 100;
         int tBet = 9;
         int tLines = 50;
@@ -545,7 +535,7 @@ int main()
                     break;
                 case 'b':
                 case 'B':
-                    cout << "Enter New Bet: ";
+                    cout << "Enter New Bet(1-9): ";
                     while (true) {
                         cin >> bet;
                         if (!cin) {
